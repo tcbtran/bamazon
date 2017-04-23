@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("Connected as id " + connection.threadId);
+  console.log("Connected as ID " + connection.threadId);
 });
 
 connection.query('SELECT * FROM products', function(error, results, fields) {
@@ -40,29 +40,36 @@ var shopBamazon = function() {
 ]).then(function(answer) {
     
     var query = "SELECT * FROM products WHERE item_id = ?";
-    // console.log('answer:', answer);
+
     connection.query(query, answer.id, function(err, res) {
       if (err) return console.log(err);
-      console.log(res);
-      console.log(typeof(res[0].item_id));
-      // else if (res.stock_quantity < answer.quantity) {
-      //   console.log("Sorry, we do not have enough " + res.product_name + " in stock.");
-      //   connection.end();
-      //   }
-       {
-        // var newQuantity = parseInt(res.stock_quantity) - parseInt(answer.quantity);
-        // connection.query('UPDATE products SET ? WHERE ?', [{stock_quantity: newQuantity}, {item_id: parseInt(answer.id)}], function(err) {
-        //   if (err) throw err;
-        //   console.log("Your order has been placed.  Thank you.");
+
+      for (var i=0; i < res.length; i++) {
+        if (res[i].stock_quantity < answer.quantity) {
+          console.log("Insufficient quantity!");
           connection.end();
-          // });
         }
+        else {
+          var newQuantity = res[i].stock_quantity - answer.quantity;
+          var purchaseTotal = res[i].price * answer.quantity;
+
+          connection.query('UPDATE products SET ? WHERE ?', [{stock_quantity: newQuantity}, {item_id: answer.id}], function(error) {
+            if (error) throw error;
+              console.log("Purchased ID: " + res[i].item_id);
+              console.log("Order Quantity: " + answer.quantity);
+              console.log("Current Stock Quantity: " + res[i].stock_quantity);
+              console.log("New Stock Quantity: " + newQuantity);
+              console.log("Purchase Total: $" + purchaseTotal);
+              connection.end();
+          });
+        }
+      }
       
-      });
-    
     });
-  // connection.end();
-  };
+    
+  });
+  
+};
 
 shopBamazon();
 
