@@ -58,9 +58,13 @@ var shopBamazon = function() {
           console.log("Quantity: %s", answer.quantity);
           console.log("Price: %s", res[i].price);
           console.log("Total: %s", purchaseTotal);
-          console.log("New stock quantity: %s", newQuantity);
-          connection.end();
-          
+
+          connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: newQuantity}, {item_id: res[i].item_id}], function(error) {
+            if (error) throw error;
+            console.log("New stock_quantity: %s", newQuantity);
+          });
+
+          connection.end();          
         }
       }
       
@@ -73,13 +77,3 @@ var shopBamazon = function() {
 shopBamazon();
 
 });
-
-
-
-
-
-
-
-
-
-
