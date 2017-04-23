@@ -52,16 +52,15 @@ var shopBamazon = function() {
         else {
           var newQuantity = res[i].stock_quantity - answer.quantity;
           var purchaseTotal = res[i].price * answer.quantity;
-
-          connection.query('UPDATE products SET ? WHERE ?', [{stock_quantity: newQuantity}, {item_id: answer.id}], function(error) {
-            if (error) throw error;
-              console.log("Purchased ID: " + res[i].item_id);
-              console.log("Order Quantity: " + answer.quantity);
-              console.log("Current Stock Quantity: " + res[i].stock_quantity);
-              console.log("New Stock Quantity: " + newQuantity);
-              console.log("Purchase Total: $" + purchaseTotal);
-              connection.end();
-          });
+          // console.log(res);
+          console.log("Product ID: %s" ,res[i].item_id);
+          console.log("Product: %s", res[i].product_name);
+          console.log("Quantity: %s", answer.quantity);
+          console.log("Price: %s", res[i].price);
+          console.log("Total: %s", purchaseTotal);
+          console.log("New stock quantity: %s", newQuantity);
+          connection.end();
+          
         }
       }
       
